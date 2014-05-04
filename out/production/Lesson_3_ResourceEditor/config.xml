@@ -1,0 +1,36 @@
+<root>
+	<set frameRate="30" centerX="256" centerY="256" />
+	<actions desc="文件夹名字对应英文动作名">
+		<action label='单向' data='defult' />
+		<action label='站立1' data='stand' />
+		<action label='跑动1' data='walk' />
+		<action label='攻击' data='attack' />
+		<action label='走动1' data='walk' />
+		<action label='攻击1' data='attack' />
+		<action label='受击1' data='hurt' />
+		<action label='死亡1' data='die' />
+		<action label='坐下1' data='sit' />
+	</actions>
+	<dirs desc="文件夹名对应字段">
+		<dir label='上' data='d0' />
+		<dir label='右上' data='d1' />
+		<dir label='右' data='d2' />
+		<dir label='右下' data='d3' />
+		<dir label='下' data='d4' />
+		<dir label='左下' data='d5' />
+		<dir label='左' data='d6' />
+		<dir label='左上' data='d7' />
+	</dirs>
+	<englishAction desc="英文动作名显示成的中文">
+		<action data='defult' label='单向' sort="0" />
+		<action data='default' label='单向' sort="1" />
+		<action data='stand' label='站立' sort="2" />
+		<action data='walk' label='跑动' sort="3" />
+		<action data='attack' label='刀砍' sort="4" />
+		<action data='attack_arrow' label='射箭' sort="5" />
+		<action data='attack_casting' label='挥扇' sort="6" />
+		<action data='hurt' label='受创' sort="7" />
+		<action data='die' label='死亡' sort="8" />
+		<action data='sit' label='坐下' sort="9" />
+	</englishAction>
+</root>

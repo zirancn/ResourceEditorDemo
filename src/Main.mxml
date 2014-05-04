@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
+                       width="400" height="400"
+                       nativeDragEnter="onDragEnter(event)"
+                       nativeDragDrop="onDragDrop(event)"
+                       creationComplete="onCreateComplete(event)">
+    <fx:Script><![CDATA[
+        import manager.ConfigManager;
+        import manager.FileManager;
+        import manager.OutputManager;
+
+        import mx.controls.Alert;
+        import mx.events.DragEvent;
+        import mx.events.FlexEvent;
+        import mx.managers.DragManager;
+
+        import vo.FrameVO;
+
+        import vo.ResourceVO;
+
+        private function onCreateComplete(event:FlexEvent):void {
+            initConfig();
+        }
+
+        private function initConfig():void {
+            var configXMLLoader:URLLoader = new URLLoader();
+            configXMLLoader.addEventListener(Event.COMPLETE, onConfigXMLComplete);
+            configXMLLoader.load(new URLRequest("config.xml"));
+
+            var jsflLoader:URLLoader = new URLLoader();
+            jsflLoader.addEventListener(Event.COMPLETE, onJsflComplete);
+            jsflLoader.load(new URLRequest("jsfl/template.jsfl"));
+        }
+
+        private function onJsflComplete(event:Event):void {
+            var urlLoader:URLLoader = event.target as URLLoader;
+            FileManager.jsflTemplate = urlLoader.data;
+        }
+
+        private function onConfigXMLComplete(event:Event):void {
+            var urlLoader:URLLoader = event.target as URLLoader;
+            ConfigManager.parseConfig(XML(urlLoader.data));
+        }
+
+        private function onDragEnter(event:NativeDragEvent):void {
+            NativeDragManager.acceptDragDrop(this);
+        }
+
+        private function onDragDrop(event:NativeDragEvent):void {
+            var files:Array = event.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
+            var type:String;
+            FileManager.files = new Dictionary();
+            for (var i:int = 0, len:int = files.length; i < len; i++) {
+                var f:File = files[i];
+                var flag:String = f.name.substr(f.name.length - 4, 4);
+                if (f.isDirectory == true) {
+                    if (flag == "role") {
+                        //角色资源
+                        type = "r";
+                    } else {
+                        Alert.show(f.name + "  类型无法识别", "错误");
+                    }
+                    loading.visible = true;
+                    FileManager.inputPNG(f, type, loaded);
+                } else {
+                    Alert.show(f.name + "  类型无法识别", "错误");
+                }
+            }
+        }
+
+        public function loaded():void {
+            loading.visible = false;
+        }
+
+        private function onClick(event:MouseEvent):void {
+            if (loading.visible) {
+                Alert.show("加载中，请稍等！");
+                return;
+            }
+            if (skin_id.text == "") {
+                Alert.show("请输入资源ID");
+                return;
+            }
+            var rss:Array = [];
+            for each(var rs:ResourceVO in FileManager.files) {
+                var fs:Dictionary = rs.frames;
+                OutputManager.savePNG(rs);
+                rss.push(rs);
+            }
+            OutputManager.output(rss, int(skin_id.text));
+        }
+        ]]></fx:Script>
+
+    <s:Label x="10" y="10" text="加载中..." visible="false" id="loading"/>
+    <s:Label x="40" y="55" text="资源ID："/>
+    <s:TextInput x="100" y="50" width="200" height="22" id="skin_id"/>
+    <s:Label x="10" y="160"
+             text="请拖入需要打包的资源文件夹"
+             fontSize="30"/>
+    <s:Button label="输出" x="280" y="260" width="50" height="20"
+              click="onClick(event)"/>
+</s:WindowedApplication>
